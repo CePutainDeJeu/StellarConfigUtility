@@ -1,0 +1,53 @@
+﻿@page "/tech"
+@using StellarConfigUtility.Models
+@using StellarConfigUtility.Interfaces; 
+@inject IDataAccessService _service;
+
+<h3>Add New Stellar Tech</h3>
+
+<EditForm Model="@tech" OnValidSubmit="@HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+
+	<label>
+		Tech Cost:
+		<InputNumber id="TechCost" @bind-Value="tech.Cost" />
+	</label>
+
+	<label>
+		Tech Tier:
+		<InputNumber id="TechTier" @bind-Value="tech.Tier" />
+	</label>
+
+	<label>
+		Tech Cost Weight:
+		<InputNumber id="TechWeight" @bind-Value="tech.Weight" />
+	</label>
+
+	<label>
+		Tech Category:
+		<InputText id="TechCategory" @bind-Value="tech.Category" />
+	</label>
+
+	<label>
+		Tech Tree:
+		<InputText id="TechTree" @bind-Value="tech.Tree" />
+	</label>
+
+	<label>
+		Prerequisites:
+		<InputText id="TechPrereqs" @bind-Value="tech.Prerequisites" />
+	</label>
+
+	<button type="submit">Submit Tech</button>
+</EditForm>
+
+@code {
+	private Technology tech = new Technology();
+
+	private void HandleValidSubmit()
+	{
+		_service.CreateTechnology(tech);
+		tech = new Technology();
+	}
+}
