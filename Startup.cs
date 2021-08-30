@@ -34,6 +34,7 @@ namespace StellarConfigUtility
 		public void ConfigureServices(IServiceCollection services)
 		{
 			string dbConnectionString = Environment.GetEnvironmentVariable(EVC.DBConnectionString);
+			Console.WriteLine($"Initializing Stellar with a connection string of {dbConnectionString}");
 
 			services.AddDbContext<ApplicationDbContext>(options =>
 				options.UseSqlServer(dbConnectionString));
