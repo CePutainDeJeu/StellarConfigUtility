@@ -1,13 +1,19 @@
 ﻿@page "/tech"
 @using StellarConfigUtility.Models
-@using StellarConfigUtility.Interfaces; 
+@using StellarConfigUtility.Interfaces;
 @inject IDataAccessService _service;
+@inject IJSRuntime JsRuntime;
 
 <h3>Add New Stellar Tech</h3>
 
 <EditForm Model="@tech" OnValidSubmit="@HandleValidSubmit">
 	<DataAnnotationsValidator />
 	<ValidationSummary />
+
+	<label>
+		Technology Name:
+		<InputText id="TechName" @bind-Value="tech.Name" />
+	</label>
 
 	<label>
 		Tech Cost:
@@ -42,12 +48,91 @@
 	<button type="submit">Submit Tech</button>
 </EditForm>
 
+<br />
+<br />
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Name
+			</th>
+			<th>
+				Cost
+			</th>
+			<th>
+				Tree
+			</th>
+			<th>
+				Tier
+			</th>
+			<th>
+				Category
+			</th>
+			<th>
+				Weight
+			</th>
+			<th>
+				Prerequisites
+			</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in _service.GetTechnologies())
+		{
+			<tr>
+				<td>
+					@item.Name
+				</td>
+				<td>
+					@item.Cost
+				</td>
+				<td>
+					@item.Tree
+				</td>
+				<td>
+					@item.Tier
+				</td>
+				<td>
+					@item.Category
+				</td>
+				<td>
+					@item.Weight
+				</td>
+				<td>
+					@item.Prerequisites
+				</td>
+				<td>
+					<button>
+						Edit
+					</button>
+					<button @onclick="@(() => DeleteTech(@item) )">
+						Delete
+					</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
 @code {
+	@inject NavigationManager NavigationManager;
 	private Technology tech = new Technology();
 
 	private void HandleValidSubmit()
 	{
 		_service.CreateTechnology(tech);
-		tech = new Technology();
+		NavigationManager.NavigateTo("tech", true);
+	}
+
+	private async void DeleteTech(Technology tech)
+	{
+		bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{tech.Name}'?");
+		if (confirmed)
+		{
+			_service.DeleteTechnology(tech.TechnologyId);
+			NavigationManager.NavigateTo("tech", true);
+		}
 	}
 }

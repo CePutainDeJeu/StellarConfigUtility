@@ -9,6 +9,10 @@ namespace StellarConfigUtility.Models
 		public int TechnologyId { get; set; }
 
 		[Required]
+		[StringLength(30, ErrorMessage = "Name is too long")]
+		public string Name { get; set; }
+
+		[Required]
 		[Range(1, 999999, ErrorMessage = "Value for {0} must be between {1} and {2}")]
 		public int Cost { get; set; }
 
