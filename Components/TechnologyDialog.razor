@@ -7,46 +7,53 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title">Add New Stellar Technology</h4>
+				@if (IsEditting)
+				{
+					<h4 class="modal-title">Edit Stellar Technology</h4>
+				}
+				else
+				{
+					<h4 class="modal-title">Add New Stellar Technology</h4>
+				}
 			</div>
 			<div class="modal-body">
-				<EditForm Model="@tech" OnValidSubmit="@HandleValidSubmit">
+				<EditForm Model="@Technology" OnValidSubmit="@HandleValidSubmit">
 					<DataAnnotationsValidator />
 					<ValidationSummary />
 
 					<label>
 						Technology Name:
-						<InputText id="TechName" @bind-Value="tech.Name" />
+						<InputText id="TechName" @bind-Value="Technology.Name" />
 					</label>
 
 					<label>
 						Tech Cost:
-						<InputNumber id="TechCost" @bind-Value="tech.Cost" />
+						<InputNumber id="TechCost" @bind-Value="Technology.Cost" />
 					</label>
 
 					<label>
 						Tech Tier:
-						<InputNumber id="TechTier" @bind-Value="tech.Tier" />
+						<InputNumber id="TechTier" @bind-Value="Technology.Tier" />
 					</label>
 
 					<label>
 						Tech Cost Weight:
-						<InputNumber id="TechWeight" @bind-Value="tech.Weight" />
+						<InputNumber id="TechWeight" @bind-Value="Technology.Weight" />
 					</label>
 
 					<label>
 						Tech Category:
-						<InputText id="TechCategory" @bind-Value="tech.Category" />
+						<InputText id="TechCategory" @bind-Value="Technology.Category" />
 					</label>
 
 					<label>
 						Tech Tree:
-						<InputText id="TechTree" @bind-Value="tech.Tree" />
+						<InputText id="TechTree" @bind-Value="Technology.Tree" />
 					</label>
 
 					<label>
 						Prerequisites:
-						<InputText id="TechPrereqs" @bind-Value="tech.Prerequisites" />
+						<InputText id="TechPrereqs" @bind-Value="Technology.Prerequisites" />
 					</label>
 
 					<button type="submit">Submit Tech</button>
@@ -62,11 +69,22 @@
 	[Parameter]
 	public EventCallback<bool> OnClose { get; set; }
 
-	private Technology tech = new Technology();
+	[Parameter]
+	public Technology Technology { get; set; }
+
+	[Parameter]
+	public bool IsEditting { get; set; }
 
 	private void HandleValidSubmit()
 	{
-		_service.CreateTechnology(tech);
+		if (IsEditting)
+		{
+			_service.UpdateTechnology(Technology);
+		}
+		else
+		{
+			_service.CreateTechnology(Technology);
+		}
 		OnClose.InvokeAsync(true);
 	}
 }
