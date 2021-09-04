@@ -12,5 +12,6 @@ namespace StellarConfigUtility.Interfaces
 		public Technology GetTechnology(int techId);
 		public void CreateTechnology(Technology tech);
 		public void DeleteTechnology(int techId);
+		public void UpdateTechnology(Technology tech);
 	}
 }

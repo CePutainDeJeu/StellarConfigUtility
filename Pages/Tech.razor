@@ -1,52 +1,20 @@
 ﻿@page "/tech"
 @using StellarConfigUtility.Models
 @using StellarConfigUtility.Interfaces;
+@using StellarConfigUtility.Components;
 @inject IDataAccessService _service;
 @inject IJSRuntime JsRuntime;
 
-<h3>Add New Stellar Tech</h3>
+@if (NewTechnologyDialogOpen)
+{
+	<NewTechnology OnClose="@OnNewTechnologyDialogClose"></NewTechnology>;
+}
+@if (EditTechnologyDialogOpen)
+{
+	<EditTechnology OnClose="@OnEditTechnologyDialogClose" tech="@EditTarget"></EditTechnology>;
+}
 
-<EditForm Model="@tech" OnValidSubmit="@HandleValidSubmit">
-	<DataAnnotationsValidator />
-	<ValidationSummary />
-
-	<label>
-		Technology Name:
-		<InputText id="TechName" @bind-Value="tech.Name" />
-	</label>
-
-	<label>
-		Tech Cost:
-		<InputNumber id="TechCost" @bind-Value="tech.Cost" />
-	</label>
-
-	<label>
-		Tech Tier:
-		<InputNumber id="TechTier" @bind-Value="tech.Tier" />
-	</label>
-
-	<label>
-		Tech Cost Weight:
-		<InputNumber id="TechWeight" @bind-Value="tech.Weight" />
-	</label>
-
-	<label>
-		Tech Category:
-		<InputText id="TechCategory" @bind-Value="tech.Category" />
-	</label>
-
-	<label>
-		Tech Tree:
-		<InputText id="TechTree" @bind-Value="tech.Tree" />
-	</label>
-
-	<label>
-		Prerequisites:
-		<InputText id="TechPrereqs" @bind-Value="tech.Prerequisites" />
-	</label>
-
-	<button type="submit">Submit Tech</button>
-</EditForm>
+<button @onclick="() => OpenNewTechnologyDialog()">Add New Technology</button>
 
 <br />
 <br />
@@ -104,7 +72,7 @@
 					@item.Prerequisites
 				</td>
 				<td>
-					<button>
+					<button @onclick="@(() => OpenEditTechnologyDialog(@item) )">
 						Edit
 					</button>
 					<button @onclick="@(() => DeleteTech(@item) )">
@@ -118,14 +86,9 @@
 
 @code {
 	@inject NavigationManager NavigationManager;
-	private Technology tech = new Technology();
-
-	private void HandleValidSubmit()
-	{
-		_service.CreateTechnology(tech);
-		NavigationManager.NavigateTo("tech", true);
-	}
-
+	public bool NewTechnologyDialogOpen { get; set; }
+	public bool EditTechnologyDialogOpen { get; set; }
+	private Technology EditTarget { get; set; }
 	private async void DeleteTech(Technology tech)
 	{
 		bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete '{tech.Name}'?");
@@ -134,5 +97,27 @@
 			_service.DeleteTechnology(tech.TechnologyId);
 			NavigationManager.NavigateTo("tech", true);
 		}
+	}
+
+	private void OpenNewTechnologyDialog()
+	{
+		NewTechnologyDialogOpen = true;
+	}
+	private void OpenEditTechnologyDialog(Technology editTarget) 
+	{
+		EditTechnologyDialogOpen = true;
+		EditTarget = editTarget;
+	}
+
+	private async Task OnNewTechnologyDialogClose(bool accepted)
+	{
+		NewTechnologyDialogOpen = false;
+		NavigationManager.NavigateTo("tech", true);
+	}
+
+	private async Task OnEditTechnologyDialogClose(bool accepted)
+	{
+		EditTechnologyDialogOpen = false;
+		NavigationManager.NavigateTo("tech", true);
 	}
 }

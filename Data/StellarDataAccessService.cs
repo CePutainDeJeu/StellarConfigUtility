@@ -55,5 +55,21 @@ namespace StellarConfigUtility.Data
 				return context.Technologies.Where(tech => tech.TechnologyId == techId).FirstOrDefault();
 			}
 		}
+
+		public void UpdateTechnology(Technology edittedTech)
+		{
+			using(StellarDBContext context = _contextFactory.CreateDbContext())
+			{
+				var tech = context.Technologies.First(t => t.TechnologyId == edittedTech.TechnologyId);
+				tech.Name = edittedTech.Name;
+				tech.Cost = edittedTech.Cost;
+				tech.Tier = edittedTech.Tier;
+				tech.Weight = edittedTech.Weight;
+				tech.Category = edittedTech.Category;
+				tech.Tree = edittedTech.Tree;
+				tech.Prerequisites = edittedTech.Prerequisites;
+				context.SaveChanges();
+			}
+		}
 	}
 }
